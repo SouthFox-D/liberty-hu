@@ -5,10 +5,24 @@
   "src/test"]
 
  :dependencies
- [[reagent "1.2.0"]]
+ [[reagent "1.2.0"]
+  [re-frame "1.3.0"]
+  [metosin/reitit "0.7.0-alpha5"]
+  [day8.re-frame/tracing      "0.6.2"]
+  [day8.re-frame/re-frame-10x "1.6.0"]]
+
+
 
  :dev-http {8080 "public"}
  :builds
  {:frontend
   {:target :browser
-   :modules {:main {:init-fn frontend.app/init}}}}}
+   :modules
+   {:main {:init-fn frontend.app/init}}
+   :devtools
+   {:preloads [day8.re-frame-10x.preload]}
+   :dev
+   {:compiler-options
+    {:closure-defines
+     {re-frame.trace.trace-enabled?        true
+      day8.re-frame.tracing.trace-enabled? true}}}}}}
