@@ -1,5 +1,5 @@
 ;; shadow-cljs configuration
-{:deps true
+{:lein true
  :nrepl {:port 8701}
 
  :dev-http {8080 "public"}
