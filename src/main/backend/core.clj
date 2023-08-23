@@ -1,12 +1,28 @@
 (ns backend.core
-  (:use ring.adapter.jetty))
+  (:require [ring.adapter.jetty :refer [run-jetty]]
+            [reitit.ring :as ring]
+            [backend.handlers :as handlers])
+  (:gen-class))
 
-(defn handler [request]
-  {:status 200
-   :headers {"Content-Type" "text/plain"}
-   :body "Hello World"})
 
-(defn -main
-  [& args]
-  (run-jetty handler {:port 3000
-                      :join? false}))
+(def app
+  (ring/ring-handler
+   (ring/router
+    [["/hp/:id" {:parameters {:path {:id int?}}
+                 :get {:handler handlers/fetch-hu-post}}]
+    ])
+
+   (ring/create-default-handler
+    {:not-found (constantly {:status 404 :body "Not found"})})))
+
+(defn -main [& args]
+  (run-jetty #'app {:port 3000
+                    :join? false}))
+
+(def server (run-jetty #'app {:port 3000
+                                     :join? false}))
+
+(comment
+  (app {:request-method :get
+        :uri "/hp/431038004"
+        }))
