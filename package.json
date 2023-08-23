@@ -4,7 +4,7 @@
     "shadow:release": "shadow-cljs release app",
     "postcss:build": "postcss src/css/tailwind.css -o ./public/css/app.css --verbose",
     "postcss:watch": "postcss src/css/tailwind.css -o ./public/css/app.css --verbose -w",
-    "postcss:release": "cross-env NODE_ENV=production postcss src/css/tailwind.css -o ./public/css/app.css --verbose",
+    "postcss:release": "NODE_ENV=production postcss src/css/tailwind.css -o ./public/css/app.css --verbose",
     "dev": "run-p -l *:watch",
     "release": "run-s *:release"
   },

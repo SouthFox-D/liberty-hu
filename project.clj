@@ -8,9 +8,11 @@
                  [org.clojure/clojure "1.11.1"]
                  [org.clojure/clojurescript "1.11.60"]
                  [thheller/shadow-cljs "2.25.2"]
+                 [com.google.javascript/closure-compiler-unshaded "v20230802"]
                  [ring/ring-core "1.11.0-alpha1"]
                  [ring/ring-jetty-adapter "1.11.0-alpha1"]
-                 [com.google.javascript/closure-compiler-unshaded "v20230802"]
+                 [org.babashka/http-client "0.4.14"]
+                 [org.jsoup/jsoup "1.16.1"]
 
                  [org.slf4j/slf4j-nop "2.0.7"]
                  [reagent/reagent "1.2.0"]
@@ -26,7 +28,8 @@
 
   :profiles
   {:uberjar {:dependencies ^:replace [[org.clojure/clojure "1.11.1"]
-                                     [ring/ring-jetty-adapter "1.11.0-alpha1"]
-                                     [org.slf4j/slf4j-nop "2.0.7"]]
+                                      [ring/ring-jetty-adapter "1.11.0-alpha1"]
+                                      [org.slf4j/slf4j-nop "2.0.7"]
+                                      [org.babashka/http-client "0.4.14"]]
 
             :aot :all}})
