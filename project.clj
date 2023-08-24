@@ -16,10 +16,11 @@
 
                  [org.slf4j/slf4j-nop "2.0.7"]
                  [reagent/reagent "1.2.0"]
-                 [re-frame/re-frame "1.3.0"]
                  [metosin/reitit "0.7.0-alpha5"]
-                 [day8.re-frame/tracing  "0.6.2"]
 
+                 [binaryage/devtools "1.0.7"]
+                 [re-frame/re-frame "1.3.0"]
+                 [day8.re-frame/tracing  "0.6.2"]
                  [day8.re-frame/re-frame-10x "1.6.0"]
                  ]
 

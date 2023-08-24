@@ -9,10 +9,9 @@
    :modules
    {:main {:init-fn frontend.app/init}}
    :devtools
-   {:preloads [day8.re-frame-10x.preload]}
+   {:preloads [day8.re-frame-10x.preload devtools.preload]}
    :dev
    {:compiler-options
     {:closure-defines
-     {"re-frame.trace.trace-enabled?"           true
-      "re_frame.trace.trace_enabled_QMARK_"     true
-      "day8.re-frame.tracing.trace-enabled?"    true}}}}}}
+     {re-frame.trace.trace-enabled?           true
+      day8.re-frame.tracing.trace-enabled?    true}}}}}}
