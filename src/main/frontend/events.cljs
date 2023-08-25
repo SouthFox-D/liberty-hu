@@ -1,5 +1,6 @@
 (ns frontend.events
-  (:require [re-frame.core :refer [reg-event-db reg-event-fx dispatch]]
+  (:require [re-frame.core :refer [reg-event-db reg-event-fx]]
+            [superstructor.re-frame.fetch-fx]
             [clojure.string :as str]))
 
 
@@ -12,23 +13,45 @@
 
 (reg-event-fx
  :set-active-page
- (fn [{:keys [db]} [_ {:keys [page id]}]]
-   (let [set-page (assoc db :active-page page)]
+ (fn [{:keys [db]} [_ {:keys [new-match id]}]]
+   (js/console.log new-match)
+   (let [page (get-in new-match [:data :name])
+         set-page (assoc db :current-route new-match)]
+   (js/console.log page)
      (case page
        ;; -- URL @ "/" --------------------------------------------------------
-       "/" {:db         set-page}))))
+       :frontpage {:db         set-page
+                   :dispatch [:get-page]}
+       ;; -- URL @ "/about" --------------------------------------------------------
+       :about     {:db set-page}
+
+       ;; -- URL @ "/item" --------------------------------------------------------
+       :item     {:db set-page}
+       ))))
 
 
-(reg-event-db :initialize-db
-  (fn [_ _]
-    {:set-active-page nil}))
+(reg-event-fx
+ :get-page
+ (fn [{:keys [db]} _]
+   {:db         (assoc-in db [:loading :tags] true)
+    :fetch {:method                 :get
+            :url                    "https://api.github.com/orgs/day8"
+            :mode                   :cors
+            :referrer               :no-referrer
+            :credentials            :omit
+            :timeout                5000
+            :response-content-types {#"application/.*json" :json}
+            :on-success             [:get-page-success]
+            :on-failure             [:initialize-db]
+            }}))
 
 (reg-event-db
- :navigated
- (fn [db [_ new-match]]
-   (let [old-match   (:current-route db)]
-     (assoc db :current-route new-match))))
+ :get-page-success
+ (fn [db [_ {repos_url :body}]]
+   (-> db
+       (assoc :repos_url (:id repos_url)) )))
 
-(def history
-  #(dispatch [:set-active-page {:page      (:path %)
-                                :id (get-in % [:path-params :id])}]))
+(reg-event-db
+ :initialize-db
+ (fn [_ _]
+   {:current-route nil}))

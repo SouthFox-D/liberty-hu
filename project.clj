@@ -17,7 +17,7 @@
                  [org.slf4j/slf4j-nop "2.0.7"]
                  [reagent/reagent "1.2.0"]
                  [metosin/reitit "0.7.0-alpha5"]
-
+                 [superstructor/re-frame-fetch-fx "0.2.0"]
                  [binaryage/devtools "1.0.7"]
                  [re-frame/re-frame "1.3.0"]
                  [day8.re-frame/tracing  "0.6.2"]

@@ -8,10 +8,6 @@
             [frontend.router]))
 
 
-(defn on-navigate [new-match]
-  (when new-match
-    (dispatch [:navigated new-match])))
-
 (defonce root (rdom/create-root (js/document.getElementById "app")))
 
 (defn ^:dev/after-load start []
@@ -22,7 +18,7 @@
   (dispatch-sync [:initialize-db])
   (rfe/start!
    frontend.router/router
-   on-navigate
+   frontend.router/on-navigate
    {:use-fragment true})
   (js/console.log "init")
   (start))

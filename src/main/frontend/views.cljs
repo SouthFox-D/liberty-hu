@@ -24,7 +24,6 @@
      [:h2 "Selected item " id]]))
 
 (defn nav [{:keys [current-route]}]
-  (js/console.log current-route)
   (let [active #(when (= % (-> current-route :data :name)) "> ")]
     [:ul {:class "nav flex flex-col overflow-hidden"}
      [:li
