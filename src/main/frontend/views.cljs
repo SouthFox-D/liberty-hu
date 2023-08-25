@@ -20,9 +20,11 @@
 (defn item-page []
   (let [loading @(subscribe [:loading])
         post @(subscribe [:post])]
-    [:div
-     {:dangerouslySetInnerHTML
-      {:__html post}}]))
+    (if (:post loading)
+      [:p "Loading..."]
+      [:div
+       {:dangerouslySetInnerHTML
+        {:__html post}}])))
 
 (defn nav [{:keys [current-route]}]
   (let [active #(when (= % (-> current-route :data :name)) "> ")]
