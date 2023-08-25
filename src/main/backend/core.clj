@@ -1,7 +1,7 @@
 (ns backend.core
   (:require [ring.adapter.jetty :refer [run-jetty]]
             [reitit.ring :as ring]
-            [ring.util.response :refer [resource-response]]
+            [ring.util.response :refer [resource-response content-type]]
             [backend.handlers :as handlers])
   (:gen-class))
 
@@ -9,7 +9,8 @@
 (def app
   (ring/ring-handler
    (ring/router
-    [["/" (constantly (resource-response "index.html" {:root "public"}))]
+    [["/" (constantly (content-type (resource-response
+                        "index.html" {:root "public"}) "text/html; charset=utf-8"))]
      ["/api"
       ["/hp/:id" {:parameters {:path {:id int?}}
                   :get {:handler handlers/fetch-hu-post}}]]])
