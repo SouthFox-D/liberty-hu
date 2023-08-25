@@ -9,9 +9,7 @@
   (ring/ring-handler
    (ring/router
     [["/hp/:id" {:parameters {:path {:id int?}}
-                 :get {:handler handlers/fetch-hu-post}}]
-    ])
-
+                 :get {:handler handlers/fetch-hu-post}}]])
    (ring/create-default-handler
     {:not-found (constantly {:status 404 :body "Not found"})})))
 
@@ -20,9 +18,8 @@
                     :join? false}))
 
 (def server (run-jetty #'app {:port 3000
-                                     :join? false}))
-
-(comment
-  (app {:request-method :get
-        :uri "/hp/431038004"
-        }))
+                              :join? false}))
+;; (.stop server)
+;; (app {:request-method :get
+;;       :uri "/hp/431038004"
+;;       })

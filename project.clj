@@ -13,6 +13,7 @@
                  [ring/ring-jetty-adapter "1.11.0-alpha1"]
                  [org.babashka/http-client "0.4.14"]
                  [org.jsoup/jsoup "1.16.1"]
+                 [cheshire "5.11.0"]
 
                  [org.slf4j/slf4j-nop "2.0.7"]
                  [reagent/reagent "1.2.0"]
@@ -21,8 +22,7 @@
                  [binaryage/devtools "1.0.7"]
                  [re-frame/re-frame "1.3.0"]
                  [day8.re-frame/tracing  "0.6.2"]
-                 [day8.re-frame/re-frame-10x "1.6.0"]
-                 ]
+                 [day8.re-frame/re-frame-10x "1.6.0"]]
 
   :source-paths ["src/main"]
   :main ^:skip-aot backend.core
@@ -30,7 +30,10 @@
   :profiles
   {:uberjar {:dependencies ^:replace [[org.clojure/clojure "1.11.1"]
                                       [ring/ring-jetty-adapter "1.11.0-alpha1"]
+                                      [metosin/reitit "0.7.0-alpha5"]
                                       [org.slf4j/slf4j-nop "2.0.7"]
-                                      [org.babashka/http-client "0.4.14"]]
+                                      [org.babashka/http-client "0.4.14"]
+                                      [org.jsoup/jsoup "1.16.1"]
+                                      [cheshire "5.11.0"]]
 
             :aot :all}})
