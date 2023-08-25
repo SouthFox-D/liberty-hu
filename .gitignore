@@ -6,6 +6,7 @@ public/css
 /checkouts
 /src/gen
 
+resources
 pom.xml
 pom.xml.asc
 *.iml
