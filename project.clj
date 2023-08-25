@@ -35,5 +35,4 @@
                                       [org.jsoup/jsoup "1.16.1"]
                                       [cheshire "5.11.0"]]
 
-             :resource-paths ["public/"]
              :aot :all}})
