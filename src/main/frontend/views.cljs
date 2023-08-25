@@ -18,10 +18,11 @@
     [:li [:a {:href "stub"} "Source code"]]]])
 
 (defn item-page []
-  (let [current-route @(subscribe [:current-route])
-        id (get-in current-route [:path-params :id])]
+  (let [loading @(subscribe [:loading])
+        post @(subscribe [:post])]
     [:div
-     [:h2 "Selected item " id]]))
+     {:dangerouslySetInnerHTML
+      {:__html post}}]))
 
 (defn nav [{:keys [current-route]}]
   (let [active #(when (= % (-> current-route :data :name)) "> ")]
@@ -31,7 +32,7 @@
      [:li
       [:a {:href (rfe/href :about)} (active :about) "About"]]
      [:li
-      [:a {:href (rfe/href :item {:id 233})} (active :item) "Item 233"]]]))
+      [:a {:href (rfe/href :item {:id 96817849})} (active :item) "Item 96817849"]]]))
 
 
 (defn current-page []
