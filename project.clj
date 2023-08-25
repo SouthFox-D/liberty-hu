@@ -9,8 +9,8 @@
                  [thheller/shadow-cljs "2.25.2"]
                  [com.google.javascript/closure-compiler-unshaded "v20230802"]
                  [ring/ring-core "1.11.0-alpha1"]
-                 [ring/ring-jetty-adapter "1.11.0-alpha1"]
                  [org.babashka/http-client "0.4.14"]
+                 [http-kit "2.7.0"]
                  [org.jsoup/jsoup "1.16.1"]
                  [cheshire "5.11.0"]
 
@@ -28,7 +28,7 @@
 
   :profiles
   {:uberjar {:dependencies ^:replace [[org.clojure/clojure "1.11.1"]
-                                      [ring/ring-jetty-adapter "1.11.0-alpha1"]
+                                      [http-kit "2.7.0"]
                                       [metosin/reitit "0.7.0-alpha5"]
                                       [org.slf4j/slf4j-nop "2.0.7"]
                                       [org.babashka/http-client "0.4.14"]

@@ -1,5 +1,5 @@
 (ns backend.core
-  (:require [ring.adapter.jetty :refer [run-jetty]]
+  (:require [org.httpkit.server :as server]
             [reitit.ring :as ring]
             [ring.util.response :refer [resource-response content-type]]
             [backend.handlers :as handlers])
@@ -20,12 +20,10 @@
      {:not-found (constantly {:status 404 :body "Not found"})}))))
 
 (defn -main [& args]
-  (run-jetty #'app {:port 3000
-                    :join? false}))
+  (server/run-server #'app {:port 3000}))
 
-;; (def server (run-jetty #'app {:port 3000
-;;                               :join? false}))
-;; (.stop server)
+;; (def web-server (server/run-server #'app {:port 3000}))
+;; (web-server)
 ;; (app {:request-method :get
 ;;       :uri "/api/hp/431038004"
 ;;       })
