@@ -2,14 +2,24 @@
   (:require [reitit.frontend.easy :as rfe]
             [re-frame.core :refer [subscribe]]))
 
+(defn button
+  [id]
+  [:div
+   [:button
+    {:type "button"
+     :on-click #(rfe/push-state id)
+     :class "btn btn-blue"}
+    "Item " id]
+   [:br]])
+
 
 (defn home-page []
   [:div
-   :h2 "Home"]
-  [:button
-   {:type "button"
-    :on-click #(rfe/push-state :item {:id 431038004})}
-   "Item 431038004"])
+   [:h2 "Try this!"]
+   (button 385214753)
+   (button 96817849)
+   (button 24425284)
+   ])
 
 (defn about-page []
   [:div
