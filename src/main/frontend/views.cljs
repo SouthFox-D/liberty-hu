@@ -2,6 +2,7 @@
   (:require [reitit.frontend.easy :as rfe]
             [re-frame.core :refer [subscribe]]))
 
+
 (defn button
   [id]
   [:div
@@ -21,11 +22,13 @@
    (button 24425284)
    ])
 
+
 (defn about-page []
   [:div
    [:h2 "About"]
    [:ul
     [:li [:a {:href "stub"} "Source code"]]]])
+
 
 (defn item-page []
   (let [loading @(subscribe [:loading])
@@ -39,6 +42,7 @@
         {:dangerouslySetInnerHTML
          {:__html (:content post)}}]])))
 
+
 (defn nav [{:keys [current-route]}]
   (let [active #(when (= % (-> current-route :data :name)) "> ")]
     [:ul {:class "nav flex flex-col overflow-hidden"}
@@ -46,6 +50,7 @@
       [:a {:href (rfe/href :frontpage)} (active :frontpage) "Home"]]
      [:li
       [:a {:href (rfe/href :about)} (active :about) "About"]]]))
+
 
 (defn current-page []
   (let [current-route @(subscribe [:current-route])]
