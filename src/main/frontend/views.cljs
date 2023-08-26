@@ -27,7 +27,7 @@
   [:div
    [:h2 "About"]
    [:ul
-    [:li [:a {:href "stub"} "Source code"]]]])
+    [:li [:a {:href "https://git.southfox.me/southfox/liberty-hu"} "Source code"]]]])
 
 
 (defn item-page []
