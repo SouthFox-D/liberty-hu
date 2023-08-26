@@ -14,10 +14,6 @@
   [docs]
   (-> (.select docs "style[data-emotion-css~=^[a-z0-9]*$]")
       (.remove))
-  (-> (.select docs "figure > img")
-      (.remove))
-  (-> (.select docs "figure > noscript")
-      (.tagName "div"))
   (vec
    (for [a (.select docs "a")]
      (.attr a "href"
@@ -26,6 +22,15 @@
               (.attr a "href")
               "https://link.zhihu.com/?target=" ""))))))
 
+(defn clean-images
+  [docs]
+  (-> (.select docs "figure > img")
+      (.remove))
+  (-> (.select docs "figure > noscript")
+      (.tagName "div"))
+  (vec
+   (for [img (.select docs "figure > div > img")]
+     (.attr img  "loading" "lazy"))))
 
 (defn fetch-hu-post
   [request]
@@ -34,6 +39,7 @@
         docs (-> (client/get post-url) :body Jsoup/parse
                  (.getElementsByClass "Post-RichTextContainer"))]
     (clean-html docs)
+    (clean-images docs)
     {:status 200
      :headers {"Content-Type" "application/json; charset=utf-8"}
      :body (-> (.toString docs)
