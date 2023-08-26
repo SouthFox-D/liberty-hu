@@ -45,10 +45,7 @@
      [:li
       [:a {:href (rfe/href :frontpage)} (active :frontpage) "Home"]]
      [:li
-      [:a {:href (rfe/href :about)} (active :about) "About"]]
-     [:li
-      [:a {:href (rfe/href :item {:id 96817849})} (active :item) "Item 96817849"]]]))
-
+      [:a {:href (rfe/href :about)} (active :about) "About"]]]))
 
 (defn current-page []
   (let [current-route @(subscribe [:current-route])]
