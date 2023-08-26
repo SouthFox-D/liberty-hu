@@ -8,7 +8,7 @@
   [:div
    [:button
     {:type "button"
-     :on-click #(rfe/push-state id)
+     :on-click #(rfe/push-state :item {:id id})
      :class "btn btn-blue"}
     "Item " id]
    [:br]])
@@ -19,8 +19,7 @@
    [:h2 "Try this!"]
    (button 385214753)
    (button 96817849)
-   (button 24425284)
-   ])
+   (button 24425284)])
 
 
 (defn about-page []
