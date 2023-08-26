@@ -52,7 +52,7 @@
  (fn [db [_ {body :body}]]
    (-> db
        (assoc-in [:loading :post] false)
-       (assoc :post (:content body)))))
+       (assoc :post body))))
 
 (reg-event-db
  :initialize-db

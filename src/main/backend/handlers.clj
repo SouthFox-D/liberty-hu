@@ -8,7 +8,7 @@
 
 (defn wrap-json
   [content]
-  (generate-string {:content content}))
+  (generate-string content))
 
 (defn clean-html
   [docs]
@@ -34,13 +34,15 @@
 
 (defn fetch-hu-post
   [request]
-  (let [id (-> request :path-params :id)
+  (let [id       (-> request :path-params :id)
         post-url (str/join ["https://zhuanlan.zhihu.com/p/" id])
-        docs (-> (client/get post-url) :body Jsoup/parse
-                 (.getElementsByClass "Post-RichTextContainer"))]
+        page     (-> (client/get post-url) :body Jsoup/parse)
+        title    (.getElementsByClass page "Post-Title")
+        docs     (.getElementsByClass page "Post-RichTextContainer")]
     (clean-html docs)
     (clean-images docs)
-    {:status 200
-     :headers {"Content-Type" "application/json; charset=utf-8"}
-     :body (-> (.toString docs)
-               (wrap-json))}))
+    (let [content {:content (.toString docs)
+                   :title   (.text title)}]
+        {:status    200
+         :headers   {"Content-Type" "application/json; charset=utf-8"}
+         :body      (wrap-json content)})))

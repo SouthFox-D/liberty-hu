@@ -23,8 +23,11 @@
     (if (:post loading)
       [:p "Loading..."]
       [:div
-       {:dangerouslySetInnerHTML
-        {:__html post}}])))
+       [:div {:class "text-2xl"}
+        [:h1 (:title post)]]
+       [:div
+        {:dangerouslySetInnerHTML
+         {:__html (:content post)}}]])))
 
 (defn nav [{:keys [current-route]}]
   (let [active #(when (= % (-> current-route :data :name)) "> ")]
