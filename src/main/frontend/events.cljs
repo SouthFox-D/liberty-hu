@@ -17,10 +17,8 @@
 (reg-event-fx
  :set-active-page
  (fn [{:keys [db]} [_ {:keys [new-match id]}]]
-   (js/console.log new-match)
    (let [page (get-in new-match [:data :name])
          set-page (assoc db :current-route new-match)]
-   (js/console.log page)
      (case page
        ;; -- URL @ "/" --------------------------------------------------------
        :frontpage   {:db         set-page}

@@ -20,5 +20,4 @@
    frontend.router/router
    frontend.router/on-navigate
    {:use-fragment true})
-  (js/console.log "init")
   (start))
