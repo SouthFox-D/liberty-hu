@@ -15,13 +15,12 @@
   [docs]
   (-> (.select docs "style[data-emotion-css~=^[a-z0-9]*$]")
       (.remove))
-  (vec
-   (for [a (.select docs "a")]
-     (.attr a "href"
-            (-> (.attr a "href")
-                (str/replace "https://link.zhihu.com/?target=" "")
-                (str/replace "https://zhuanlan.zhihu.com/p/" "#/item/")
-                (url-decode))))))
+  (doseq [a (.select docs "a")]
+    (.attr a "href"
+           (-> (.attr a "href")
+               (str/replace "https://link.zhihu.com/?target=" "")
+               (str/replace "https://zhuanlan.zhihu.com/p/" "#/item/")
+               (url-decode)))))
 
 
 (defn clean-images
@@ -30,9 +29,8 @@
       (.remove))
   (-> (.select docs "figure > noscript")
       (.tagName "div"))
-  (vec
-   (for [img (.select docs "figure > div > img")]
-     (.attr img  "loading" "lazy"))))
+  (doseq [img (.select docs "figure > div > img")]
+    (.attr img  "loading" "lazy")))
 
 
 (defn render-linkcard
