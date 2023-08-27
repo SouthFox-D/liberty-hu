@@ -35,6 +35,13 @@
      (.attr img  "loading" "lazy"))))
 
 
+(defn render-linkcard
+  [docs]
+  (doseq [link-card (.select docs "a.LinkCard > span.LinkCard-contents")]
+    (.empty link-card)
+    (.append link-card (.attr (.parent link-card) "data-text"))))
+
+
 (defn fetch-hu-post
   [request]
   (let [id       (-> request :path-params :id)
@@ -44,8 +51,9 @@
         docs     (.getElementsByClass page "Post-RichTextContainer")]
     (clean-html docs)
     (clean-images docs)
+    (render-linkcard docs)
     (let [content {:content (.toString docs)
                    :title   (.text title)}]
-        {:status    200
-         :headers   {"Content-Type" "application/json; charset=utf-8"}
-         :body      (wrap-json content)})))
+      {:status    200
+       :headers   {"Content-Type" "application/json; charset=utf-8"}
+       :body      (wrap-json content)})))
