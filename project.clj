@@ -13,6 +13,7 @@
                  [http-kit "2.7.0"]
                  [org.jsoup/jsoup "1.16.1"]
                  [cheshire "5.11.0"]
+                 [hiccup "2.0.0-RC1"]
 
                  [org.slf4j/slf4j-nop "2.0.7"]
                  [reagent/reagent "1.2.0"]
@@ -33,6 +34,7 @@
                                       [org.slf4j/slf4j-nop "2.0.7"]
                                       [org.babashka/http-client "0.4.14"]
                                       [org.jsoup/jsoup "1.16.1"]
-                                      [cheshire "5.11.0"]]
+                                      [cheshire "5.11.0"]
+                                      [hiccup "2.0.0-RC1"]]
 
              :aot :all}})
