@@ -41,7 +41,7 @@
 
 
 (defn fetch-hu-post
-  [request]
+  [request & {:keys [hugo]}]
   (let [id       (-> request :path-params :id)
         post-url (str/join ["https://zhuanlan.zhihu.com/p/" id])
         page     (-> (client/get post-url) :body Jsoup/parse)
@@ -54,6 +54,8 @@
     (let [content {:content (.toString docs)
                    :title   (.text title)
                    :time    (first (str/split (.text post-time) #"・"))}]
-      {:status    200
-       :headers   {"Content-Type" "application/json; charset=utf-8"}
-       :body      (wrap-json content)})))
+      (if hugo
+        (.toString docs)
+        {:status    200
+         :headers   {"Content-Type" "application/json; charset=utf-8"}
+         :body      (wrap-json content)}))))

@@ -1,14 +1,17 @@
 (ns backend.core
   (:require [org.httpkit.server :as server]
             [reitit.ring :as ring]
-            [backend.handlers :as handlers])
+            [backend.handlers :as handlers]
+            [backend.hugo.site :as hugo])
   (:gen-class))
 
 
 (def app
   (ring/ring-handler
    (ring/router
-    [["/api"
+    [["/hp/:id" {:parameters {:path {:id int?}}
+                  :get {:handler hugo/build-hu-post}}]
+     ["/api"
       ["/hp/:id" {:parameters {:path {:id int?}}
                   :get {:handler handlers/fetch-hu-post}}]]])
    (ring/routes
