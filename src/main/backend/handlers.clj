@@ -46,12 +46,14 @@
         post-url (str/join ["https://zhuanlan.zhihu.com/p/" id])
         page     (-> (client/get post-url) :body Jsoup/parse)
         title    (.getElementsByClass page "Post-Title")
+        post-time     (.getElementsByClass page "ContentItem-time")
         docs     (.getElementsByClass page "Post-RichTextContainer")]
     (clean-html docs)
     (clean-images docs)
     (render-linkcard docs)
     (let [content {:content (.toString docs)
-                   :title   (.text title)}]
+                   :title   (.text title)
+                   :time    (first (str/split (.text post-time) #"・"))}]
       {:status    200
        :headers   {"Content-Type" "application/json; charset=utf-8"}
        :body      (wrap-json content)})))

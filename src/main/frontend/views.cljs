@@ -36,7 +36,8 @@
       [:p "Loading..."]
       [:div
        [:div {:class "text-2xl"}
-        [:h1 (:title post)]]
+        [:h1 (:title post)]
+        [:time  (:time  post)]]
        [:div
         {:dangerouslySetInnerHTML
          {:__html (:content post)}}]])))
