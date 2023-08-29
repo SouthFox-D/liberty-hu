@@ -58,7 +58,7 @@
                    :title   (.text title)
                    :time    (first (str/split (.text post-time) #"・"))}]
       (if hugo
-        (.toString docs)
+        content
         {:status    200
          :headers   {"Content-Type" "application/json; charset=utf-8"}
          :body      (wrap-json content)}))))
