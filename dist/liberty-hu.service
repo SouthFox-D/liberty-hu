@@ -1,0 +1,14 @@
+#See https://computingforgeeks.com/how-to-run-java-jar-application-with-systemd-on-linux/
+[Unit]
+Description=Liberty Hu service
+
+[Service]
+WorkingDirectory=/opt/prod
+ExecStart=/bin/java -Xms256m -Xmx512m -jar liberty-hu.jar
+User=jvmapps
+Type=simple
+Restart=on-failure
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target
