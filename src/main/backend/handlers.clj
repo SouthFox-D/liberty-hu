@@ -12,15 +12,18 @@
 
 
 (defn clean-html
-  [docs]
-  (-> (.select docs "style[data-emotion-css~=^[a-z0-9]*$]")
-      (.remove))
-  (doseq [a (.select docs "a")]
-    (.attr a "href"
-           (-> (.attr a "href")
-               (str/replace "https://link.zhihu.com/?target=" "")
-               (str/replace "https://zhuanlan.zhihu.com/p/" "#/item/")
-               (url-decode)))))
+  [docs hugo]
+  (let [replace-str (if hugo
+                      "/hp/"
+                      "#/item/")]
+    (-> (.select docs "style[data-emotion-css~=^[a-z0-9]*$]")
+        (.remove))
+    (doseq [a (.select docs "a")]
+      (.attr a "href"
+             (-> (.attr a "href")
+                 (str/replace "https://link.zhihu.com/?target=" "")
+                 (str/replace "https://zhuanlan.zhihu.com/p/" replace-str)
+                 (url-decode))))))
 
 
 (defn clean-images
@@ -48,7 +51,7 @@
         title    (.getElementsByClass page "Post-Title")
         post-time     (.getElementsByClass page "ContentItem-time")
         docs     (.getElementsByClass page "Post-RichTextContainer")]
-    (clean-html docs)
+    (clean-html docs hugo)
     (clean-images docs)
     (render-linkcard docs)
     (let [content {:content (.toString docs)
