@@ -40,13 +40,20 @@
                  :timeout                10000
                  :response-content-types {#"application/.*json" :json}
                  :on-success             [:get-page-success]
-                 :on-failure             [:initialize-db]}
+                 :on-failure             [:get-page-failure]}
 
     :db         (-> db
                     (assoc-in [:loading :post] true))}))
 
 (reg-event-db
  :get-page-success
+ (fn [db [_ {body :body}]]
+   (-> db
+       (assoc-in [:loading :post] false)
+       (assoc :post body))))
+
+(reg-event-db
+ :get-page-failure
  (fn [db [_ {body :body}]]
    (-> db
        (assoc-in [:loading :post] false)
