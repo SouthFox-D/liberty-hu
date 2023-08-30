@@ -19,7 +19,7 @@
                       [:div {:class "flex flex-row flex-wrap py-4"}
                        [:div {:class "w-full sm:w-1/3 md:w-1/4 px-2"}
                         [:div {:class "sticky top-0 p-4 bg-slate-300 rounded-xl w-full"}
-                         [:nav]]]
+                         [:div (:catalog content)]]]
                         [:div {:class "w-full sm:w-2/3 md:w-3/4 pt-1 px-2"}
                          [:h1 (:title content)]
                          [:time (:time content)]
