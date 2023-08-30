@@ -62,18 +62,31 @@
   (let [id       (-> request :path-params :id)
         post-url (str/join ["https://zhuanlan.zhihu.com/p/" id])
         page     (-> (client/get post-url) :body Jsoup/parse)
+        docs     (.getElementsByClass page "Post-RichTextContainer")
         title    (.getElementsByClass page "Post-Title")
-        post-time     (.getElementsByClass page "ContentItem-time")
-        docs     (.getElementsByClass page "Post-RichTextContainer")]
+        post-time     (.getElementsByClass page "ContentItem-time")]
+
     (clean-html docs hugo)
     (clean-images docs)
     (render-linkcard docs)
-    (let [content {:content (.toString docs)
-                   :title   (.text title)
-                   :time    (first (str/split (.text post-time) #"・"))
-                   :catalog (.toString (build-catalog docs))}]
-      (if hugo
-        content
-        {:status    200
-         :headers   {"Content-Type" "application/json; charset=utf-8"}
-         :body      (wrap-json content)}))))
+
+    (if (empty? docs)
+      (let [content {:content "Not Found"
+                     :title   "Not Found"
+                     :time    ""
+                     :catalog ""}]
+        (if hugo
+          content
+          {:status    404
+           :headers   {"Content-Type" "application/json; charset=utf-8"}
+           :body      (wrap-json content)}))
+
+      (let [content {:content (.toString docs)
+                     :title   (.text title)
+                     :time    (first (str/split (.text post-time) #"・"))
+                     :catalog (.toString (build-catalog docs))}]
+        (if hugo
+          content
+          {:status    200
+           :headers   {"Content-Type" "application/json; charset=utf-8"}
+           :body      (wrap-json content)})))))
