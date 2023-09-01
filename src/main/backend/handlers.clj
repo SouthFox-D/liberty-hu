@@ -10,7 +10,6 @@
   [content]
   (generate-string content))
 
-
 (defn clean-html
   [docs hugo]
   (let [replace-str (if hugo
@@ -25,7 +24,6 @@
                  (str/replace "https://zhuanlan.zhihu.com/p/" replace-str)
                  (url-decode))))))
 
-
 (defn clean-images
   [docs]
   (-> (.select docs "figure > img")
@@ -35,7 +33,6 @@
   (doseq [img (.select docs "figure > div > img")]
     (.attr img  "loading" "lazy")))
 
-
 (defn render-linkcard
   [docs]
   (doseq [link-card (.select docs "a.LinkCard > span.LinkCard-contents")]
@@ -44,27 +41,26 @@
 
 (defn build-catalog-item
   [catalog-item]
-  (.tagName catalog-item "a")
-  (.attr catalog-item "href"
-              (str/join ["#" (.attr catalog-item "id")]))
-  (.attr catalog-item "id" "")
-  (str "<li>" (.toString catalog-item) "</li>"))
-
+  (str "<li>" "<a href=\""
+       (str/join ["#" (.attr catalog-item "id")])
+       "\">"
+       (.text catalog-item)
+       "</a></li>"))
 
 (defn build-catalog
   [docs]
   (let [catalog (.select docs "h2, h3, h4, h5")]
     (apply str (mapv build-catalog-item catalog))))
 
-
 (defn fetch-hu-post
   [request & {:keys [hugo]}]
-  (let [id       (-> request :path-params :id)
-        post-url (str/join ["https://zhuanlan.zhihu.com/p/" id])
-        page     (-> (client/get post-url) :body Jsoup/parse)
-        docs     (.getElementsByClass page "Post-RichTextContainer")
-        title    (.getElementsByClass page "Post-Title")
-        post-time     (.getElementsByClass page "ContentItem-time")]
+  (let [id         (-> request :path-params :id)
+        post-url   (str/join ["https://zhuanlan.zhihu.com/p/" id])
+        page       (-> (client/get post-url) :body Jsoup/parse)
+        docs       (.getElementsByClass page "Post-RichTextContainer")
+        title      (.getElementsByClass page "Post-Title")
+        post-time  (.getElementsByClass page "ContentItem-time")
+        catalog    (build-catalog docs)]
 
     (clean-html docs hugo)
     (clean-images docs)
@@ -84,7 +80,7 @@
       (let [content {:content (.toString docs)
                      :title   (.text title)
                      :time    (first (str/split (.text post-time) #"・"))
-                     :catalog (.toString (build-catalog docs))}]
+                     :catalog catalog}]
         (if hugo
           content
           {:status    200
