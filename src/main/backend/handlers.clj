@@ -11,18 +11,15 @@
   (generate-string content))
 
 (defn clean-html
-  [docs hugo]
-  (let [replace-str (if hugo
-                      "/hp/"
-                      "#/item/")]
-    (-> (.select docs "style[data-emotion-css~=^[a-z0-9]*$]")
-        (.remove))
-    (doseq [a (.select docs "a")]
-      (.attr a "href"
-             (-> (.attr a "href")
-                 (str/replace "https://link.zhihu.com/?target=" "")
-                 (str/replace "https://zhuanlan.zhihu.com/p/" replace-str)
-                 (url-decode))))))
+  [docs replace-str]
+  (-> (.select docs "style[data-emotion-css~=^[a-z0-9]*$]")
+      (.remove))
+  (doseq [a (.select docs "a")]
+    (.attr a "href"
+           (-> (.attr a "href")
+               (str/replace "https://link.zhihu.com/?target=" "")
+               (str/replace "https://zhuanlan.zhihu.com/p/" replace-str)
+               (url-decode)))))
 
 (defn clean-images
   [docs]
@@ -53,38 +50,39 @@
     (apply str (mapv build-catalog-item catalog))))
 
 (defn process-hu-post
-  [page hugo]
+  [page {:keys [content-type replace-str wrap-fn]}]
   (let [post-content  (.getElementsByClass page "Post-RichTextContainer")
         title         (.getElementsByClass page "Post-Title")
         post-time     (.getElementsByClass page "ContentItem-time")]
 
-    (clean-html post-content hugo)
+    (clean-html post-content replace-str)
     (clean-images post-content)
     (render-linkcard post-content)
 
     {:status 200
-     :body {:content (.toString post-content)
-            :title   (.text title)
-            :time    (first (str/split (.text post-time) #"・"))
-            :catalog (build-catalog post-content)}}))
-
+     :headers content-type
+     :body (wrap-fn
+            {:content (.toString post-content)
+             :title   (.text title)
+             :time    (first (str/split (.text post-time) #"・"))
+             :catalog (build-catalog post-content)})}))
 
 (defn fetch-hu-post
-  [post-id & {:keys [hugo]}]
+  [post-id params]
   (let [post-url   (str/join ["https://zhuanlan.zhihu.com/p/" post-id])
         page       (-> (client/get post-url) :body Jsoup/parse)
         docs       (.getElementsByClass page "Post-RichTextContainer")]
-
     (if (empty? docs)
-      {:status 404
-       :body   {:content "Not Found"
-                :title   "Not Found"}}
-      (process-hu-post page hugo))))
+      {:status  404
+       :headers (:content-type params)
+       :body    {:content "Not Found"
+                 :title   "Not Found"}}
+      (process-hu-post page params))))
 
 (defn build-api-hu-post
   [request]
-  (let [post-id  (-> request   :path-params :id)
-        content  (fetch-hu-post post-id)]
-    {:status  (:status content)
-     :headers {"Content-Type" "application/json; charset=utf-8"}
-     :body    (wrap-json (:body content))}))
+  (let [post-id  (-> request   :path-params :id)]
+    (fetch-hu-post post-id
+     {:content-type {"Content-Type" "application/json; charset=utf-8"}
+      :replace-str   "#/item/"
+      :wrap-fn       wrap-json})))
