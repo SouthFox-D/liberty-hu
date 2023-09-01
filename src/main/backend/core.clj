@@ -10,10 +10,10 @@
   (ring/ring-handler
    (ring/router
     [["/hp/:id" {:parameters {:path {:id int?}}
-                  :get {:handler hugo/build-hu-post}}]
+                  :get {:handler hugo/build-hugo-post}}]
      ["/api"
       ["/hp/:id" {:parameters {:path {:id int?}}
-                  :get {:handler handlers/fetch-hu-post}}]]])
+                  :get {:handler handlers/build-api-hu-post}}]]])
    (ring/routes
     (ring/create-resource-handler {:path "/"})
     (ring/create-default-handler

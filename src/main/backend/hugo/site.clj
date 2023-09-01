@@ -3,10 +3,12 @@
             [hiccup.page :as page]))
 
 
-(defn build-hu-post
+(defn build-hugo-post
   [request]
-  (let [content (handlers/fetch-hu-post request {:hugo true})]
-    {:status    200
+  (let [post-id         (-> request :path-params :id)
+        result (handlers/fetch-hu-post post-id {:hugo true})
+        content (:body result)]
+    {:status    (:status result)
      :headers   {"Content-Type" "text/html; charset=utf-8"}
      :body      (page/html5 {:escape-strings? false}
                   [:html

@@ -52,37 +52,39 @@
   (let [catalog (.select docs "h2, h3, h4, h5")]
     (apply str (mapv build-catalog-item catalog))))
 
-(defn fetch-hu-post
-  [request & {:keys [hugo]}]
-  (let [id         (-> request :path-params :id)
-        post-url   (str/join ["https://zhuanlan.zhihu.com/p/" id])
-        page       (-> (client/get post-url) :body Jsoup/parse)
-        docs       (.getElementsByClass page "Post-RichTextContainer")
-        title      (.getElementsByClass page "Post-Title")
-        post-time  (.getElementsByClass page "ContentItem-time")
-        catalog    (build-catalog docs)]
+(defn process-hu-post
+  [page hugo]
+  (let [post-content  (.getElementsByClass page "Post-RichTextContainer")
+        title         (.getElementsByClass page "Post-Title")
+        post-time     (.getElementsByClass page "ContentItem-time")]
 
-    (clean-html docs hugo)
-    (clean-images docs)
-    (render-linkcard docs)
+    (clean-html post-content hugo)
+    (clean-images post-content)
+    (render-linkcard post-content)
+
+    {:status 200
+     :body {:content (.toString post-content)
+            :title   (.text title)
+            :time    (first (str/split (.text post-time) #"・"))
+            :catalog (build-catalog post-content)}}))
+
+
+(defn fetch-hu-post
+  [post-id & {:keys [hugo]}]
+  (let [post-url   (str/join ["https://zhuanlan.zhihu.com/p/" post-id])
+        page       (-> (client/get post-url) :body Jsoup/parse)
+        docs       (.getElementsByClass page "Post-RichTextContainer")]
 
     (if (empty? docs)
-      (let [content {:content "Not Found"
-                     :title   "Not Found"
-                     :time    ""
-                     :catalog ""}]
-        (if hugo
-          content
-          {:status    404
-           :headers   {"Content-Type" "application/json; charset=utf-8"}
-           :body      (wrap-json content)}))
+      {:status 404
+       :body   {:content "Not Found"
+                :title   "Not Found"}}
+      (process-hu-post page hugo))))
 
-      (let [content {:content (.toString docs)
-                     :title   (.text title)
-                     :time    (first (str/split (.text post-time) #"・"))
-                     :catalog catalog}]
-        (if hugo
-          content
-          {:status    200
-           :headers   {"Content-Type" "application/json; charset=utf-8"}
-           :body      (wrap-json content)})))))
+(defn build-api-hu-post
+  [request]
+  (let [post-id  (-> request   :path-params :id)
+        content  (fetch-hu-post post-id)]
+    {:status  (:status content)
+     :headers {"Content-Type" "application/json; charset=utf-8"}
+     :body    (wrap-json (:body content))}))
