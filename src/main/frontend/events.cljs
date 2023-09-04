@@ -27,7 +27,13 @@
 
        ;; -- URL @ "/item" --------------------------------------------------------
        :item        {:db         set-page
-                     :dispatch   [:get-page {:id id}]}))))
+                     :dispatch   [:get-page {:id id}]}
+
+       ;; -- URL @ "/item" --------------------------------------------------------
+       :question    {:db         set-page
+                     :dispatch   [:get-question {:id id}]}
+       ))))
+
 
 (reg-event-fx
  :get-page
@@ -57,6 +63,36 @@
  (fn [db [_ {body :body}]]
    (-> db
        (assoc-in [:loading :post] false)
+       (assoc :post body))))
+
+(reg-event-fx
+ :get-question
+ (fn [{:keys [db]} [_ params]]
+   {:fetch      {:method                 :get
+                 :url                    (endpoint "hq" (:id params))
+                 :mode                   :cors
+                 :referrer               :no-referrer
+                 :credentials            :omit
+                 :timeout                10000
+                 :response-content-types {#"application/.*json" :json}
+                 :on-success             [:get-question-success]
+                 :on-failure             [:get-question-failure]}
+
+    :db         (-> db
+                    (assoc-in [:loading :question] true))}))
+
+(reg-event-db
+ :get-question-success
+ (fn [db [_ {body :body}]]
+   (-> db
+       (assoc-in [:loading :question] false)
+       (assoc :post body))))
+
+(reg-event-db
+ :get-question-failure
+ (fn [db [_ {body :body}]]
+   (-> db
+       (assoc-in [:loading :question] false)
        (assoc :post body))))
 
 (reg-event-db

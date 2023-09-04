@@ -20,6 +20,12 @@
       :view frontend.views/item-page
       :link-text "Item"
       :parameters {:path {:id int?}
+                   :query {(ds/opt :foo) keyword?}}}]
+    ["hq/:id"
+     {:name :question
+      :view frontend.views/question-page
+      :link-text "Question"
+      :parameters {:path {:id int?}
                    :query {(ds/opt :foo) keyword?}}}]]])
 
 (def router

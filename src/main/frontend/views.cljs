@@ -42,6 +42,26 @@
         {:dangerouslySetInnerHTML
          {:__html (:content post)}}]])))
 
+(defn question-page []
+  (let [loading @(subscribe [:loading])
+        post @(subscribe [:post])]
+    (if (:question loading)
+      [:p "Loading..."]
+      [:div
+       [:h1 {:class "text-2xl"}
+        (-> post :question :title)]
+       [:div {:class "space-y-5"}
+        (for [ans (:answers post)]
+          ^{:key ans}
+          [:div {:class "p-3 bg-white shadow rounded-lg"}
+           [:img
+            {:src (-> ans :author :avatar_url)}]
+           [:a {:class "text-lg"}
+            (-> ans :author :name)]
+           [:div
+            {:dangerouslySetInnerHTML
+             {:__html (:content ans)}}]
+           ])]])))
 
 (defn nav [{:keys [current-route]}]
   (let [active #(when (= % (-> current-route :data :name)) "> ")]
