@@ -28,7 +28,7 @@
   (-> (.select docs "figure > noscript")
       (.tagName "div"))
   (doseq [img (.select docs "figure > div > img")]
-    (.attr img  "loading" "lazy")))
+    (.attr img "loading" "lazy")))
 
 (defn render-linkcard
   [docs]
@@ -79,13 +79,20 @@
                  :title   "Not Found"}}
       (process-hu-post page params))))
 
+(defn clean-answer-img
+  [content]
+  (let [docs (Jsoup/parse content)]
+    (clean-images docs)
+    (.toString docs))
+  )
+
 (defn build-api-hu-post
   [request]
   (let [post-id  (-> request   :path-params :id)]
     (fetch-hu-post post-id
-     {:content-type {"Content-Type" "application/json; charset=utf-8"}
-      :replace-str   "#/item/"
-      :wrap-fn       wrap-json})))
+                   {:content-type {"Content-Type" "application/json; charset=utf-8"}
+                    :replace-str   "#/item/"
+                    :wrap-fn       wrap-json})))
 
 (defn build-answer
   [m]
@@ -95,7 +102,7 @@
                     :url_token  (get-in m ["target" "author" "url_token"]  )
                     :name       (get-in m ["target" "author" "name"])}
            :id            (get-in m ["target" "id"])
-           :content       (get-in m ["target" "content"])
+           :content       (clean-answer-img (get-in m ["target" "content"]))
            :created_time  (get-in m ["target" "created_time"])
            :updated_time  (get-in m ["target" "updated_time"])
            :comment_count (get-in m ["target" "comment_count"])
@@ -106,7 +113,7 @@
                     :url_token  (get-in m ["author" "urlToken"])
                     :name       (get-in m ["author" "name"])}
            :id            (get m "id")
-           :content       (get m "content")
+           :content       (clean-answer-img (get m "content"))
            :created_time  (get m "createdTime")
            :updated_time  (get m "updatedTime")
            :comment_count (get m "commentCount")
