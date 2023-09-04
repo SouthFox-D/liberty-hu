@@ -54,10 +54,11 @@
         (for [ans (:answers post)]
           ^{:key ans}
           [:div {:class "p-3 bg-white shadow rounded-lg"}
-           [:img
-            {:src (-> ans :author :avatar_url)}]
-           [:a {:class "text-lg"}
-            (-> ans :author :name)]
+           [:div {:class "flex items-center mb-3"}
+            [:img {:class "h-10 rounded"
+             :src (-> ans :author :avatar_url)}]
+            [:a {:class "text-lg ml-3"}
+             (-> ans :author :name)]]
            [:div
             {:dangerouslySetInnerHTML
              {:__html (:content ans)}}]
