@@ -91,7 +91,7 @@
   (let [post-id  (-> request   :path-params :id)]
     (fetch-hu-post post-id
                    {:content-type {"Content-Type" "application/json; charset=utf-8"}
-                    :replace-str   "#/item/"
+                    :replace-str   "#/hp/"
                     :wrap-fn       wrap-json})))
 
 (defn build-answer

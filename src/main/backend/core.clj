@@ -2,6 +2,7 @@
   (:require [org.httpkit.server :as server]
             [reitit.ring :as ring]
             [backend.handlers :as handlers]
+            [backend.page :as page]
             [backend.hugo.site :as hugo])
   (:gen-class))
 
@@ -9,7 +10,9 @@
 (def app
   (ring/ring-handler
    (ring/router
-    [["/hp/:id" {:parameters {:path {:id int?}}
+    [["/"        {:parameters {}
+                  :get {:handler page/frontend-page}}]
+     ["/hp/:id" {:parameters {:path {:id int?}}
                  :get {:handler hugo/build-hugo-post}}]
      ["/api"
       ["/hp/:id" {:parameters {:path {:id int?}}
