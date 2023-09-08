@@ -15,7 +15,7 @@
      {:name :about
       :view frontend.views/about-page
       :link-text "About"}]
-    ["item/:id"
+    ["hp/:id"
      {:name :item
       :view frontend.views/item-page
       :link-text "Item"

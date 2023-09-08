@@ -10,7 +10,7 @@
     {:type "button"
      :on-click #(rfe/push-state :item {:id id})
      :class "btn btn-blue"}
-    "Item " id]
+    "Post " id]
    [:br]])
 
 
