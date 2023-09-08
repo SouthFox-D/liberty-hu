@@ -7,7 +7,7 @@
 (defn hugo-post-template
   [content]
   (page/page-template
-   #(hiccup/html
+   (hiccup/html
      {:escape-strings? false}
      [:body
       [:div {:id "app"}
