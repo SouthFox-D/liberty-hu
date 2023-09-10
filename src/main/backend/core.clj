@@ -22,7 +22,8 @@
       ["/hp/:id" {:parameters {:path {:id s/Int}}
                   :get {:handler handlers/build-api-hu-post}}]
       ["/hq/:id" {:parameters {:path {:id s/Int}
-                               :query {:session_id s/Int}}
+                               :query {(s/optional-key :session_id) s/Int
+                                       (s/optional-key :cursor) s/Str}}
                   :get {:handler handlers/build-api-hu-question}}]]]
     {:data {:coercion   reitit.coercion.schema/coercion
             :middleware [parameters/parameters-middleware
