@@ -106,7 +106,7 @@
            :created_time  (get-in m ["target" "created_time"])
            :updated_time  (get-in m ["target" "updated_time"])
            :comment_count (get-in m ["target" "comment_count"])
-           :thanks_count  (get-in m ["target" "thanks_count"])})
+           :voteup_count  (get-in m ["target" "voteup_count"])})
 
     (into {}
           {:author {:avatar_url (get-in m ["author" "avatarUrl"])
@@ -117,7 +117,7 @@
            :created_time  (get m "createdTime")
            :updated_time  (get m "updatedTime")
            :comment_count (get m "commentCount")
-           :thanks_count  (get m "thanksCount")})))
+           :voteup_count  (get m "voteupCount")})))
 
 (defn build-question
   [m]
