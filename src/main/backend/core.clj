@@ -1,6 +1,10 @@
 (ns backend.core
   (:require [org.httpkit.server :as server]
             [reitit.ring :as ring]
+            [reitit.ring.middleware.parameters :as parameters]
+            [reitit.coercion.schema]
+            [schema.core :as s]
+            [reitit.ring.coercion :as rrc]
             [backend.handlers :as handlers]
             [backend.page :as page]
             [backend.hugo.site :as hugo])
@@ -12,13 +16,18 @@
    (ring/router
     [["/"        {:parameters {}
                   :get {:handler page/frontend-page}}]
-     ["/hp/:id" {:parameters {:path {:id int?}}
+     ["/hp/:id" {:parameters {:path {:id s/Int}}
                  :get {:handler hugo/build-hugo-post}}]
      ["/api"
-      ["/hp/:id" {:parameters {:path {:id int?}}
+      ["/hp/:id" {:parameters {:path {:id s/Int}}
                   :get {:handler handlers/build-api-hu-post}}]
-      ["/hq/:id" {:parameters {:path {:id int?}}
-                  :get {:handler handlers/build-api-hu-question}}]]])
+      ["/hq/:id" {:parameters {:path {:id s/Int}
+                               :query {:session_id s/Int}}
+                  :get {:handler handlers/build-api-hu-question}}]]]
+    {:data {:coercion   reitit.coercion.schema/coercion
+            :middleware [parameters/parameters-middleware
+                         rrc/coerce-request-middleware]}})
+
    (ring/routes
     (ring/create-resource-handler {:path "/"})
     (ring/create-default-handler
