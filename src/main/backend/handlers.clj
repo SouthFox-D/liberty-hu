@@ -75,16 +75,15 @@
     (if (empty? docs)
       {:status  404
        :headers (:content-type params)
-       :body    {:content "Not Found"
-                 :title   "Not Found"}}
+       :body    (wrap-json {:content "Not Found"
+                            :title   "Not Found"})}
       (process-hu-post page params))))
 
 (defn clean-answer-img
   [content]
   (let [docs (Jsoup/parse content)]
     (clean-images docs)
-    (.toString docs))
-  )
+    (.toString docs)))
 
 (defn build-api-hu-post
   [request]
