@@ -149,22 +149,20 @@
     question-json))
 
 (defn build-paging-next
-  [question-id next]
-  (let [cursor     (last (re-find #"cursor=(.*?)&" next))
-        session-id (last (re-find #"session_id=(.*?)(?:&|$)" next))]
-
-    {"question_id" question-id
-     "cursor" cursor
-     "session_id" session-id}
-    ))
+  [next-url]
+  (let [cursor     (last (re-find #"cursor=(.*?)&" next-url))
+        session-id (last (re-find #"session_id=(.*?)(?:&|$)" next-url))]
+    {"cursor" cursor
+     "session_id" session-id}))
 
 (defn process-api-paging
   [question-id docs]
-  (let [next       (get docs "next")]
+  (let [next-url       (get docs "next")]
     {:paging (merge
               {"page"   (get docs "page")
-               "is_end" (get docs "is_end")}
-              (build-paging-next question-id next))}))
+               "is_end" (get docs "is_end")
+               "question_id" question-id}
+              (build-paging-next next-url))}))
 
 (defn process-json-paging
   [question-id docs]
@@ -175,8 +173,9 @@
       (let [next_url (get answers "next")]
         {:paging (merge
                   {"page"    nil
-                   "is_end"  false}
-                  (build-paging-next question-id next_url))}))))
+                   "is_end"  false
+                   "question_id" question-id}
+                  (build-paging-next next_url))}))))
 
 (defn fetch-hu-question
   [request params]
