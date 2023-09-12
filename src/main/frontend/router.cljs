@@ -25,13 +25,14 @@
      {:name :question
       :view frontend.views/question-page
       :link-text "Question"
-      :parameters {:path {:id int?}
-                   :query {(ds/opt :foo) keyword?}}}]]])
+      :parameters {:path {:id int?}}}]]])
 
 (def router
   (rf/router
     routes))
 
-(def on-navigate
-  #(dispatch [:set-active-page {:new-match      %
-                                :id        (get-in % [:path-params :id])}]))
+(defn on-navigate
+  [match _]
+  (dispatch [:set-active-page {:new-match  match
+                               :id         (get-in match [:path-params :id])
+                               :query      (get match :query-params)}]))

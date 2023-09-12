@@ -1,6 +1,6 @@
 (ns frontend.views
   (:require [reitit.frontend.easy :as rfe]
-            [re-frame.core :refer [subscribe]]))
+            [re-frame.core :refer [subscribe dispatch]]))
 
 
 (defn button
@@ -13,7 +13,6 @@
     "Post " id]
    [:br]])
 
-
 (defn home-page []
   [:div
    [:h2 "Try this!"]
@@ -21,13 +20,11 @@
    (button 96817849)
    (button 24425284)])
 
-
 (defn about-page []
   [:div
    [:h2 "About"]
    [:ul
     [:li [:a {:href "https://git.southfox.me/southfox/liberty-hu"} "Source code"]]]])
-
 
 (defn item-page []
   (let [loading @(subscribe [:loading])
@@ -44,7 +41,8 @@
 
 (defn question-page []
   (let [loading @(subscribe [:loading])
-        post @(subscribe [:post])]
+        post @(subscribe [:post])
+        end? (-> post :paging :is_end)]
     (if (:question loading)
       [:p "Loading..."]
       [:div
@@ -56,13 +54,23 @@
           [:div {:class "p-3 bg-white shadow rounded-lg"}
            [:div {:class "flex items-center mb-3"}
             [:img {:class "h-10 rounded"
-             :src (-> ans :author :avatar_url)}]
+                   :src (-> ans :author :avatar_url)}]
             [:a {:class "text-lg ml-3"}
              (-> ans :author :name)]]
            [:div
             {:dangerouslySetInnerHTML
-             {:__html (:content ans)}}]
-           ])]])))
+             {:__html (:content ans)}}]])]
+       (if end?
+         [:p "answers end here."]
+         [:div
+          [:button {:type "button"
+                    :href (-> post :paging :next)
+                    :class "btn btn-blue"
+                    :on-click #(rfe/push-state
+                                :question
+                                {:id (-> post :paging :question_id)}
+                                {:cursor (-> post :paging :cursor)
+                                 :session_id (-> post :paging :session_id)})}]])])))
 
 (defn nav [{:keys [current-route]}]
   (let [active #(when (= % (-> current-route :data :name)) "> ")]

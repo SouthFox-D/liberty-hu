@@ -4,7 +4,6 @@
             [clojure.string :as str]))
 
 
-
 (if js/goog.DEBUG
   (def api-url "http://localhost:3000/api")
   (def api-url "./api"))
@@ -16,7 +15,7 @@
 
 (reg-event-fx
  :set-active-page
- (fn [{:keys [db]} [_ {:keys [new-match id]}]]
+ (fn [{:keys [db]} [_ {:keys [new-match id query]}]]
    (let [page (get-in new-match [:data :name])
          set-page (assoc db :current-route new-match)]
      (case page
@@ -27,11 +26,13 @@
 
        ;; -- URL @ "/item" --------------------------------------------------------
        :item        {:db         set-page
-                     :dispatch   [:get-page {:id id}]}
+                     :dispatch   [:get-page {:id id
+                                             :query query}]}
 
        ;; -- URL @ "/item" --------------------------------------------------------
        :question    {:db         set-page
-                     :dispatch   [:get-question {:id id}]}
+                     :dispatch   [:get-question {:id id
+                                                 :query query}]}
        ))))
 
 
@@ -70,6 +71,7 @@
  (fn [{:keys [db]} [_ params]]
    {:fetch      {:method                 :get
                  :url                    (endpoint "hq" (:id params))
+                 :params                 (:query params)
                  :mode                   :cors
                  :referrer               :no-referrer
                  :credentials            :omit
