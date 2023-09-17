@@ -4,21 +4,27 @@
 
 
 (defn button
-  [id]
+  [id type text]
   [:div
    [:button
     {:type "button"
-     :on-click #(rfe/push-state :item {:id id})
+     :on-click #(rfe/push-state type {:id id})
      :class "btn btn-blue"}
-    "Post " id]
+     text " " id]
    [:br]])
 
 (defn home-page []
   [:div
    [:h2 "Try this!"]
-   (button 385214753)
-   (button 96817849)
-   (button 24425284)])
+   [:p "Post"]
+   (button 385214753 :item "Post")
+   (button 96817849 :item "Post")
+   (button 24425284 :item "Post")
+   [:p "questions"]
+   (button 432539930 :question "question")
+   (button 437735833 :question "question")
+   (button 535225379 :question "question")
+   ])
 
 (defn about-page []
   [:div
