@@ -67,10 +67,10 @@
             {:dangerouslySetInnerHTML
              {:__html (:content ans)}}]])]
        (if end?
-         [:p "answers end here."]
+         [:p {:class "mt-5"} "answers end here."]
          (if (:comment loading)
-           [:p "loading comment..."]
-           [:div
+           [:p {:class "mt-5"} "loading comment..."]
+           [:div {:class "mt-5"}
             [:button {:type "button"
                       :href (-> post :paging :next)
                       :class "btn btn-blue"
@@ -78,7 +78,8 @@
                                   :question
                                   {:id (-> post :paging :question_id)}
                                   {:cursor (-> post :paging :cursor)
-                                   :session_id (-> post :paging :session_id)})}]]))])))
+                                   :session_id (-> post :paging :session_id)})}
+             "Load More"]]))])))
 
 (defn nav [{:keys [current-route]}]
   (let [active #(when (= % (-> current-route :data :name)) "> ")]
