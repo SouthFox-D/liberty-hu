@@ -68,15 +68,17 @@
              {:__html (:content ans)}}]])]
        (if end?
          [:p "answers end here."]
-         [:div
-          [:button {:type "button"
-                    :href (-> post :paging :next)
-                    :class "btn btn-blue"
-                    :on-click #(rfe/push-state
-                                :question
-                                {:id (-> post :paging :question_id)}
-                                {:cursor (-> post :paging :cursor)
-                                 :session_id (-> post :paging :session_id)})}]])])))
+         (if (:comment loading)
+           [:p "loading comment..."]
+           [:div
+            [:button {:type "button"
+                      :href (-> post :paging :next)
+                      :class "btn btn-blue"
+                      :on-click #(rfe/push-state
+                                  :question
+                                  {:id (-> post :paging :question_id)}
+                                  {:cursor (-> post :paging :cursor)
+                                   :session_id (-> post :paging :session_id)})}]]))])))
 
 (defn nav [{:keys [current-route]}]
   (let [active #(when (= % (-> current-route :data :name)) "> ")]

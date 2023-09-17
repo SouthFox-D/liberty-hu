@@ -69,26 +69,42 @@
 (reg-event-fx
  :get-question
  (fn [{:keys [db]} [_ params]]
-   {:fetch      {:method                 :get
-                 :url                    (endpoint "hq" (:id params))
-                 :params                 (:query params)
-                 :mode                   :cors
-                 :referrer               :no-referrer
-                 :credentials            :omit
-                 :timeout                10000
-                 :response-content-types {#"application/.*json" :json}
-                 :on-success             [:get-question-success]
-                 :on-failure             [:get-question-failure]}
+   (let [loading (if (empty? (:query params))
+                   :question
+                   :comment)]
+     {:fetch      {:method                 :get
+                   :url                    (endpoint "hq" (:id params))
+                   :params                 (:query params)
+                   :mode                   :cors
+                   :referrer               :no-referrer
+                   :credentials            :omit
+                   :timeout                10000
+                   :response-content-types {#"application/.*json" :json}
+                   :on-success             [:get-question-success]
+                   :on-failure             [:get-question-failure]}
 
-    :db         (-> db
-                    (assoc-in [:loading :question] true))}))
+      :db         (-> db
+                      (assoc-in [:loading loading] true))})))
+
+(defn merge-question
+  [db body]
+  (if (empty? (:post db))
+    (-> db
+        (assoc-in [:post :question] (:question body))
+        (assoc-in [:post :answers] (:answers body))
+        (assoc-in [:post :paging] (:paging body)))
+    (-> db
+        (assoc-in [:post :question] (:question body))
+        (update-in [:post :answers] into (:answers body))
+        (assoc-in [:post :paging] (:paging body)))))
 
 (reg-event-db
  :get-question-success
  (fn [db [_ {body :body}]]
    (-> db
        (assoc-in [:loading :question] false)
-       (assoc :post body))))
+       (assoc-in [:loading :comment] false)
+       (merge-question body))))
 
 (reg-event-db
  :get-question-failure
