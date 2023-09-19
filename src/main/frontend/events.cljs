@@ -69,42 +69,25 @@
 (reg-event-fx
  :get-question
  (fn [{:keys [db]} [_ params]]
-   (let [loading (if (empty? (:query params))
-                   :question
-                   :comment)]
-     {:fetch      {:method                 :get
-                   :url                    (endpoint "hq" (:id params))
-                   :params                 (:query params)
-                   :mode                   :cors
-                   :referrer               :no-referrer
-                   :credentials            :omit
-                   :timeout                10000
-                   :response-content-types {#"application/.*json" :json}
-                   :on-success             [:get-question-success]
-                   :on-failure             [:get-question-failure]}
-
-      :db         (-> db
-                      (assoc-in [:loading loading] true))})))
-
-(defn merge-question
-  [db body]
-  (if (empty? (:post db))
-    (-> db
-        (assoc-in [:post :question] (:question body))
-        (assoc-in [:post :answers] (:answers body))
-        (assoc-in [:post :paging] (:paging body)))
-    (-> db
-        (assoc-in [:post :question] (:question body))
-        (update-in [:post :answers] into (:answers body))
-        (assoc-in [:post :paging] (:paging body)))))
+   {:fetch      {:method                 :get
+                 :url                    (endpoint "hq" (:id params))
+                 :params                 (:query params)
+                 :mode                   :cors
+                 :referrer               :no-referrer
+                 :credentials            :omit
+                 :timeout                10000
+                 :response-content-types {#"application/.*json" :json}
+                 :on-success             [:get-question-success]
+                 :on-failure             [:get-question-failure]}
+    :db         (-> db
+                    (assoc-in [:loading :question] true))}))
 
 (reg-event-db
  :get-question-success
  (fn [db [_ {body :body}]]
    (-> db
        (assoc-in [:loading :question] false)
-       (assoc-in [:loading :comment] false)
-       (merge-question body))))
+       (assoc-in [:post] body))))
 
 (reg-event-db
  :get-question-failure
@@ -112,6 +95,32 @@
    (-> db
        (assoc-in [:loading :question] false)
        (assoc :post body))))
+
+(reg-event-fx
+ :get-more
+ (fn [{:keys [db]} [_ {:keys [request db-path]}]]
+   {:fetch      {:method                 :get
+                 :url                    (endpoint (:path request) (:id request))
+                 :params                 (:query request)
+                 :mode                   :cors
+                 :referrer               :no-referrer
+                 :credentials            :omit
+                 :timeout                10000
+                 :response-content-types {#"application/.*json" :json}
+                 :on-success             [:get-more-success]
+                 :on-failure             [:get-question-failure]}
+    :db         (-> db
+                    (assoc-in [:loading :more] true)
+                    (assoc :more-db-path db-path))}))
+
+(reg-event-db
+ :get-more-success
+ (fn [db [_ {body :body}]]
+   (let [db-path (get-in db [:more-db-path])]
+     (-> db
+         (assoc-in [:loading :more] false)
+         (update-in db-path into (:answers body))
+         (assoc-in [:post :paging] (:paging body))))))
 
 (reg-event-db
  :initialize-db

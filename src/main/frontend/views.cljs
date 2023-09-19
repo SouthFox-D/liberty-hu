@@ -48,7 +48,10 @@
 (defn question-page []
   (let [loading @(subscribe [:loading])
         post @(subscribe [:post])
-        end? (-> post :paging :is_end)]
+        end? (-> post :paging :is_end)
+        get-more (fn [event params]
+                   (.preventDefault event)
+                   (dispatch [:get-more params]))]
     (if (:question loading)
       [:p "Loading..."]
       [:div
@@ -68,17 +71,19 @@
              {:__html (:content ans)}}]])]
        (if end?
          [:p {:class "mt-5"} "answers end here."]
-         (if (:comment loading)
-           [:p {:class "mt-5"} "loading comment..."]
+         (if (:more loading)
+           [:p {:class "mt-5"} "loading more..."]
            [:div {:class "mt-5"}
             [:button {:type "button"
                       :href (-> post :paging :next)
                       :class "btn btn-blue"
-                      :on-click #(rfe/push-state
-                                  :question
-                                  {:id (-> post :paging :question_id)}
-                                  {:cursor (-> post :paging :cursor)
-                                   :session_id (-> post :paging :session_id)})}
+                      :on-click #(get-more %
+                                           {:request {:path "hq"
+                                                      :id  (-> post :paging :question_id)
+                                                      :query {:cursor (-> post :paging :cursor)
+                                                              :session_id (-> post :paging :session_id)}}
+                                            :db-path [:post :answers]
+                                            :loading-type :comment})}
              "Load More"]]))])))
 
 (defn nav [{:keys [current-route]}]
