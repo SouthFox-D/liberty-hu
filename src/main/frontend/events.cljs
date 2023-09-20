@@ -105,14 +105,15 @@
    (let [id   (get-in db [:current-route :path-params :id])
          type (get-in db [:current-route :data :name])
          title (get-in body [:question :title])
-         detil (get-in body [:question :detail])]
+         detail (get-in body [:question :detail])]
      {:db (-> db
               (assoc-in [:loading :question] false)
               (assoc-in [:post] body))
       :dispatch [:set-history {:id id
                                :type type
                                :title title
-                               :detil detil}]})))
+                               :detail detail
+                               :page 1}]})))
 
 (reg-event-db
  :get-question-failure
