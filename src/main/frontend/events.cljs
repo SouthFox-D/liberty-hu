@@ -1,7 +1,8 @@
 (ns frontend.events
-  (:require [re-frame.core :refer [reg-event-db reg-event-fx]]
+  (:require [re-frame.core :refer [reg-event-db reg-event-fx inject-cofx path after trim-v]]
             [superstructor.re-frame.fetch-fx]
-            [clojure.string :as str]))
+            [clojure.string :as str]
+            [frontend.db :refer [set-ls-history]]))
 
 
 (if js/goog.DEBUG
@@ -12,6 +13,10 @@
   "Concat params to api-uri by /"
   [& params]
   (str/join "/" (cons api-url params)))
+
+(def set-history-interceptor [(path :history)
+                              (after set-ls-history)
+                              trim-v])
 
 (reg-event-fx
  :set-active-page
@@ -82,12 +87,32 @@
     :db         (-> db
                     (assoc-in [:loading :question] true))}))
 
-(reg-event-db
+(reg-event-fx
+ :set-history
+ set-history-interceptor
+ (fn [{:keys [db]} history]
+   (let [history-item (first history)
+         update? (fn [x]
+                   (and (= (:id x) (:id history-item))
+                        (= (:type x) (:type history-item))))]
+     {:db (as-> db $
+            (remove update? $)
+            (conj $ history-item))})))
+
+(reg-event-fx
  :get-question-success
- (fn [db [_ {body :body}]]
-   (-> db
-       (assoc-in [:loading :question] false)
-       (assoc-in [:post] body))))
+ (fn [{:keys [db]} [_ {body :body}]]
+   (let [id   (get-in db [:current-route :path-params :id])
+         type (get-in db [:current-route :data :name])
+         title (get-in body [:question :title])
+         detil (get-in body [:question :detail])]
+     {:db (-> db
+              (assoc-in [:loading :question] false)
+              (assoc-in [:post] body))
+      :dispatch [:set-history {:id id
+                               :type type
+                               :title title
+                               :detil detil}]})))
 
 (reg-event-db
  :get-question-failure
@@ -122,7 +147,8 @@
          (update-in db-path into (:answers body))
          (assoc-in [:post :paging] (:paging body))))))
 
-(reg-event-db
+(reg-event-fx
  :initialize-db
- (fn [_ _]
-   {:current-route nil}))
+ [(inject-cofx :local-store-history)]
+ (fn [{:keys [local-store-history]} _]
+   {:db  (assoc {} :history local-store-history)}))
