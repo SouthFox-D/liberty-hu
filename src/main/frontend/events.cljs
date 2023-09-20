@@ -98,6 +98,18 @@
                  (merge (first (filter select-item db)) history-item)))})))
 
 (reg-event-fx
+ :get-question-by-history
+ (fn [{:keys [db]} [_ {:keys [id type]}]]
+   (let [history (get db :history)
+         select-history (fn [x]
+                          (and (= (:id x) id)
+                               (= (:type x) type)))
+         question-history (first (filter select-history history))]
+     {:db (-> db
+              (assoc-in [:post :question :title] (:title question-history))
+              (assoc-in [:post :question :detail] (:detail question-history)))})))
+
+(reg-event-fx
  :get-question-success
  (fn [{:keys [db]} [_ {body :body}]]
    (let [id   (get-in db [:current-route :path-params :id])
@@ -113,7 +125,9 @@
      {:db (-> db
               (assoc-in [:loading :question] false)
               (assoc-in [:post] body))
-      :dispatch [:set-history params]})))
+      :dispatch-n [(when (nil? question)
+                     [:get-question-by-history params])
+                   [:set-history params]]})))
 
 (reg-event-db
  :get-question-failure
