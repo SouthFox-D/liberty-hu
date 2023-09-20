@@ -159,8 +159,7 @@
   [question-id docs]
   (let [next-url       (get docs "next")]
     {:paging (merge
-              {"page"   (get docs "page")
-               "is_end" (get docs "is_end")
+              {"is_end" (get docs "is_end")
                "question_id" question-id}
               (build-paging-next next-url))}))
 
@@ -168,12 +167,10 @@
   [question-id docs]
   (let [answers (val (first (get docs "answers")))]
     (if (< (count (get answers "ids")) 5)
-      {:paging {"page"    nil
-                "is_end"  true}}
+      {:paging {"is_end"  true}}
       (let [next_url (get answers "next")]
         {:paging (merge
-                  {"page"    nil
-                   "is_end"  false
+                  {"is_end"  false
                    "question_id" question-id}
                   (build-paging-next next_url))}))))
 
