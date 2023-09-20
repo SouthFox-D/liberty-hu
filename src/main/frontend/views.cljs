@@ -23,14 +23,14 @@
    [:p "questions"]
    (button 432539930 :question "question")
    (button 437735833 :question "question")
-   (button 535225379 :question "question")
-   ])
+   (button 535225379 :question "question")])
 
 (defn about-page []
   [:div
-   [:h2 "About"]
    [:ul
-    [:li [:a {:href "https://git.southfox.me/southfox/liberty-hu"} "Source code"]]]])
+    [:li
+     [:a
+      {:href "https://git.southfox.me/southfox/liberty-hu"} "Source code"]]]])
 
 (defn item-page []
   (let [loading @(subscribe [:loading])
@@ -58,32 +58,35 @@
        [:h1 {:class "text-2xl"}
         (-> post :question :title)]
        [:div {:class "space-y-5"}
-        (for [ans (:answers post)]
-          ^{:key ans}
-          [:div {:class "p-3 bg-white shadow rounded-lg"}
+        (for [answer (:answers post)]
+          ^{:key answer}
+          [:div {:class "p-3 bg-white shadow"}
            [:div {:class "flex items-center mb-3"}
             [:img {:class "h-10 rounded"
-                   :src (-> ans :author :avatar_url)}]
+                   :src (-> answer :author :avatar_url)}]
             [:a {:class "text-lg ml-3"}
-             (-> ans :author :name)]]
+             (-> answer :author :name)]]
            [:div
             {:dangerouslySetInnerHTML
-             {:__html (:content ans)}}]])]
+             {:__html (:content answer)}}]])]
        (if end?
          [:p {:class "mt-5"} "answers end here."]
          (if (:more loading)
            [:p {:class "mt-5"} "loading more..."]
            [:div {:class "mt-5"}
-            [:button {:type "button"
-                      :href (-> post :paging :next)
-                      :class "btn btn-blue"
-                      :on-click #(get-more %
-                                           {:request {:path "hq"
-                                                      :id  (-> post :paging :question_id)
-                                                      :query {:cursor (-> post :paging :cursor)
-                                                              :session_id (-> post :paging :session_id)}}
-                                            :db-path [:post :answers]
-                                            :loading-type :comment})}
+            [:button
+             {:type "button"
+              :href (-> post :paging :next)
+              :class "btn btn-blue"
+              :on-click #(get-more
+                          %
+                          {:request
+                           {:path "hq"
+                            :id  (-> post :paging :question_id)
+                            :query {:cursor (-> post :paging :cursor)
+                                    :session_id (-> post :paging :session_id)}}
+                           :db-path [:post :answers]
+                           :loading-type :comment})}
              "Load More"]]))])))
 
 (defn nav [{:keys [current-route]}]
@@ -93,7 +96,6 @@
       [:a {:href (rfe/href :frontpage)} (active :frontpage) "Home"]]
      [:li
       [:a {:href (rfe/href :about)} (active :about) "About"]]]))
-
 
 (defn current-page []
   (let [current-route @(subscribe [:current-route])]
