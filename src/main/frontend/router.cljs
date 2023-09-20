@@ -11,6 +11,10 @@
      {:name :frontpage
       :view frontend.views/home-page
       :link-text "Home"}]
+    ["history"
+     {:name :history
+      :view frontend.views/history-page
+      :link-text "History"}]
     ["about"
      {:name :about
       :view frontend.views/about-page

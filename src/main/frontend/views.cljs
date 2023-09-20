@@ -32,6 +32,25 @@
      [:a
       {:href "https://git.southfox.me/southfox/liberty-hu"} "Source code"]]]])
 
+(defn history-page []
+  (let [histories @(subscribe [:history])]
+    [:div {:class "space-y-5"}
+     (for [history-item histories]
+       ^{:key history-item}
+       [:div {:class "p-3 bg-white shadow cursor-pointer drop-shadow-xl hover:bg-slate-200"
+              :on-click #(rfe/push-state
+                          (:type history-item)
+                          {:id (:id history-item)}
+                          (:query history-item))}
+        [:p {:class "text-2xl"}
+         (:title history-item)]
+        [:div {:class "mt-3"}
+         [:div
+          {:dangerouslySetInnerHTML
+           {:__html (:detail history-item)}}]]
+        [:div {:class "text-sm text-slate-400 text-end"}
+         (get-in history-item [:query :cursor])]])]))
+
 (defn item-page []
   (let [loading @(subscribe [:loading])
         post @(subscribe [:post])]
@@ -51,7 +70,11 @@
         end? (-> post :paging :is_end)
         get-more (fn [event params]
                    (.preventDefault event)
-                   (dispatch [:get-more params]))]
+                   (dispatch [:get-more params])
+                   (dispatch [:set-history {:id (get-in params [:request :id])
+                                            :type :question
+                                            :query (get-in params [:request :query])
+                                            }]))]
     (if (:question loading)
       [:p "Loading..."]
       [:div
@@ -94,6 +117,8 @@
     [:ul {:class "nav flex flex-col overflow-hidden"}
      [:li
       [:a {:href (rfe/href :frontpage)} (active :frontpage) "Home"]]
+     [:li
+      [:a {:href (rfe/href :history)} (active :history) "History"]]
      [:li
       [:a {:href (rfe/href :about)} (active :about) "About"]]]))
 

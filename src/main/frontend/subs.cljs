@@ -13,6 +13,11 @@
    (:loading db)))
 
 (reg-sub
+ :history
+ (fn [db _]
+   (:history db)))
+
+(reg-sub
  :post
  (fn [db _]
    (:post db)))

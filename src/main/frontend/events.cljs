@@ -26,20 +26,18 @@
      (case page
        ;; -- URL @ "/" --------------------------------------------------------
        :frontpage   {:db         set-page}
+       ;; -- URL @ "/history" --------------------------------------------------------
+       :history     {:db         set-page}
        ;; -- URL @ "/about" --------------------------------------------------------
        :about       {:db         set-page}
-
-       ;; -- URL @ "/item" --------------------------------------------------------
+       ;; -- URL @ "/hp" --------------------------------------------------------
        :item        {:db         set-page
                      :dispatch   [:get-page {:id id
                                              :query query}]}
-
-       ;; -- URL @ "/item" --------------------------------------------------------
+       ;; -- URL @ "/hq" --------------------------------------------------------
        :question    {:db         set-page
                      :dispatch   [:get-question {:id id
-                                                 :query query}]}
-       ))))
-
+                                                 :query query}]}))))
 
 (reg-event-fx
  :get-page
@@ -53,7 +51,6 @@
                  :response-content-types {#"application/.*json" :json}
                  :on-success             [:get-page-success]
                  :on-failure             [:get-page-failure]}
-
     :db         (-> db
                     (assoc-in [:loading :post] true))}))
 
@@ -92,28 +89,31 @@
  set-history-interceptor
  (fn [{:keys [db]} history]
    (let [history-item (first history)
-         update? (fn [x]
-                   (and (= (:id x) (:id history-item))
+         select-item (fn [x]
+                       (and (= (:id x) (:id history-item))
                         (= (:type x) (:type history-item))))]
-     {:db (as-> db $
-            (remove update? $)
-            (conj $ history-item))})))
+     {:db (take 50
+                (conj
+                 (remove select-item db)
+                 (merge (first (filter select-item db)) history-item)))})))
 
 (reg-event-fx
  :get-question-success
  (fn [{:keys [db]} [_ {body :body}]]
    (let [id   (get-in db [:current-route :path-params :id])
          type (get-in db [:current-route :data :name])
-         title (get-in body [:question :title])
-         detail (get-in body [:question :detail])]
+         question (get body :question)
+         params (if (nil? question)
+                  {:id id
+                   :type type}
+                  {:id id
+                   :type type
+                   :title (get-in body [:question :title])
+                   :detail (get-in body [:question :detail])})]
      {:db (-> db
               (assoc-in [:loading :question] false)
               (assoc-in [:post] body))
-      :dispatch [:set-history {:id id
-                               :type type
-                               :title title
-                               :detail detail
-                               :page 1}]})))
+      :dispatch [:set-history params]})))
 
 (reg-event-db
  :get-question-failure
