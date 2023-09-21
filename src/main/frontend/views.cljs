@@ -71,10 +71,10 @@
         get-more (fn [event params]
                    (.preventDefault event)
                    (dispatch [:get-more params])
-                   (dispatch [:set-history {:id (get-in params [:request :id])
-                                            :type :question
-                                            :query (get-in params [:request :query])
-                                            }]))]
+                   (dispatch [:set-history
+                              {:id (get-in params [:request :id])
+                               :type :question
+                               :query (get-in params [:request :query])}]))]
     (if (:question loading)
       [:p "Loading..."]
       [:div
@@ -91,11 +91,18 @@
              (-> answer :author :name)]]
            [:div
             {:dangerouslySetInnerHTML
-             {:__html (:content answer)}}]])]
-       (if end?
-         [:p {:class "mt-5"} "answers end here."]
-         (if (:more loading)
-           [:p {:class "mt-5"} "loading more..."]
+             {:__html (:content answer)}}]
+           [:div {:class "text-slate-500 my-2.5"}
+            [:p "发布于" (.toLocaleString (js/Date. (* (:created_time answer) 1000)) "zh-CN" {:timezone "UTC"})]
+            (when (not= (:created_time answer) (:updated_time answer))
+              [:p "编辑于" (.toLocaleString (js/Date. (* (:updated_time answer) 1000)) "zh-CN" {:timezone "UTC"})])]
+           [:div {:class "flex gap-4"}
+            [:span "🔼" (:voteup_count answer)]
+            [:span "🗨️️" (:comment_count answer)]]])]
+       (if (:more loading)
+         [:p {:class "mt-5"} "loading more..."]
+         (if end?
+           [:p {:class "mt-5"} "answers end here."]
            [:div {:class "mt-5"}
             [:button
              {:type "button"
