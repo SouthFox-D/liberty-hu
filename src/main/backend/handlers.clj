@@ -174,6 +174,13 @@
                    "question_id" question-id}
                   (build-paging-next next_url))}))))
 
+(defn build-answer-json
+  [question-id query]
+  (let [answers (fetch-hu-answers question-id query)]
+    (merge
+     {:answers (mapv build-answer (get answers "data"))}
+     (process-api-paging question-id (get answers "paging")))))
+
 (defn fetch-hu-question
   [request params]
   (let [question-id   (-> request :path-params :id)
@@ -199,9 +206,7 @@
           (process-json-paging question-id (get-in question-json ["initialState" "question"])))
          params)
         (process-hu-questiion
-         (merge
-          {:answers (mapv build-answer (get (fetch-hu-answers question-id query) "data"))}
-          (process-api-paging question-id (get (fetch-hu-answers question-id query) "paging")))
+         (build-answer-json question-id query)
          params)))))
 
 (defn build-api-hu-question
